@@ -21,7 +21,7 @@ h1{font-size:28px;font-weight:700;color:#1f2d4d;letter-spacing:-.6px;line-height
 .tab{padding:5px 26px;font-size:13px;font-weight:500;font-family:inherit;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#666;transition:background .15s,color .15s}
 .tab.active{background:#1a4fa0;color:#fff}
 .card{width:100%;max-width:900px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.09);box-shadow:0 2px 18px rgba(0,0,0,.07);overflow:hidden}
-canvas{display:block;width:100%;background:#f2ede3;cursor:grab}
+canvas{display:block;width:100%;aspect-ratio:900/380;background:#f2ede3;cursor:grab}
 canvas.dragging{cursor:grabbing}
 .panel{padding:10px 16px 12px;border-top:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:9px}
 
@@ -55,6 +55,49 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
 .legend-row .leg-sq{width:11px;height:11px;border-radius:2px;display:inline-block}
 .legend-row .leg-line{display:inline-block;width:20px;height:0;border-top:1.5px solid rgba(0,0,0,.55)}
 .legend-row .leg-dash{display:inline-block;width:20px;height:0;border-top:1.5px dashed rgba(0,0,0,.45)}
+
+/* ── 모바일 / 좁은 화면 (≤ 640px) ────────────────────── */
+@media (max-width: 640px){
+  body{padding:10px 10px 12px;gap:8px}
+  h1{font-size:21px;letter-spacing:-.4px}
+  .subtitle{font-size:12.5px;padding:0 6px}
+  .tab{padding:5px 18px;font-size:12.5px}
+  .card{border-radius:14px}
+
+  /* 상태 카드: 세로 스택, 좌측 컬러 바는 상단 띠로 변환 */
+  .status-card{flex-direction:column;align-items:stretch;gap:10px;padding:11px 13px;border-left:none;border-top:5px solid #888}
+  .eye-wrap{border-left:none;border-top:1px solid rgba(0,0,0,.10);padding-left:0;padding-top:10px;flex-direction:row;justify-content:flex-start;align-items:center;gap:10px}
+  .eye-wrap .eye-title{order:2;font-size:11.5px}
+  .eye-wrap #eyeview{order:1;width:80px;height:80px}
+  .eye-wrap .eye-caption{order:3;margin-left:auto;font-size:10.5px}
+
+  /* 컨트롤: 슬라이더가 자동으로 늘어나며 두 줄 이상으로 자연스럽게 흐름 */
+  .controls-bottom{padding:10px 12px;gap:10px}
+  .slider-row{flex:1 1 220px;min-width:0}
+  .slider-row input[type=range]{flex:1;width:auto;min-width:0}
+  .slider-label{font-size:11px}
+  .slider-val{font-size:11px;min-width:74px}
+  .ctrl-btn{padding:6px 12px;font-size:11.5px}
+
+  /* 범례: 줄바꿈 자유롭게, 글자 크기 축소 */
+  .legend-row{gap:10px 12px;padding:7px 12px;font-size:10.5px}
+  .legend-row .leg-line,.legend-row .leg-dash{width:16px}
+
+  /* 패널 여백 */
+  .panel{padding:9px 12px 11px;gap:8px}
+  .status-title{font-size:14px}
+  .status-desc{font-size:11.5px;line-height:1.55}
+}
+
+/* ── 매우 좁은 화면 (≤ 380px) ─────────────────────────── */
+@media (max-width: 380px){
+  h1{font-size:18px}
+  .subtitle{font-size:11.5px}
+  .tab{padding:5px 14px;font-size:12px}
+  .slider-row{flex:1 1 100%}
+  .eye-wrap{flex-wrap:wrap}
+  .eye-wrap .eye-caption{margin-left:0;width:100%}
+}
 
 /* 관측 위치 마커 (추파춥스 막대사탕: 빨간 머리 + 흰색 막대) */
 .pin-icon{display:inline-block;width:10px;height:16px;vertical-align:-4px;margin-right:4px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 18'><rect x='5.1' y='8' width='1.8' height='10' fill='%23806045' stroke='rgba(40,20,0,.8)' stroke-width='.5'/><circle cx='6' cy='5.5' r='4.5' fill='%23e83030' stroke='rgba(80,0,0,.55)' stroke-width='.7'/><circle cx='4.5' cy='4' r='1.3' fill='rgba(255,255,255,.7)'/></svg>")}

@@ -137,7 +137,7 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
     </div>
     <span class="slider-row">
       <span class="slider-label">공전 속도</span>
-      <input type="range" id="speed-slider" min="0.001" max="0.03" step="0.001" value="0.007"
+      <input type="range" id="speed-slider" min="0.0006" max="0.0054" step="0.0002" value="0.003"
              oninput="onSpeedChange(this.value)">
       <span class="slider-val" id="speed-val">보통</span>
     </span>
@@ -172,7 +172,7 @@ const MOON_R  = 13;
 let mode='solar', moonAngle=Math.PI, distMul=1.0;
 let observerAngle=Math.PI;
 let animating=false, animId=null;
-let animSpeed=0.007;
+let animSpeed=0.003;
 
 function getRX(){ return BASE_OX*distMul; }
 function getRY(){ return BASE_OY*distMul; }
@@ -740,7 +740,7 @@ function classifyLunar(moon) {
 }
 
 function updateStatus(obsRegion, lunarEc) {
-  let t,c,d,withPin=true;
+  let t,c,d;
   if(mode==='solar'){
     if(obsRegion==='umbra')
       {t='개기일식 관측 중';c='#cc3300';d='관측 위치가 달의 본그림자 안에 있습니다. 달의 시지름이 태양보다 커 태양 전체가 가려집니다. 코로나를 관측할 수 있습니다.';}
@@ -751,7 +751,6 @@ function updateStatus(obsRegion, lunarEc) {
     else
       {t='일식 없음';c='#666';d='관측 위치가 달의 그림자 바깥에 있습니다.';}
   } else {
-    withPin=false;
     if(lunarEc==='total')
       {t='개기월식';c='#cc3300';d='달 전체가 지구의 본그림자 안에 있습니다. 지구 대기를 통과한 붉은빛 때문에 달이 붉게 보입니다.';}
     else if(lunarEc==='partial')
@@ -761,8 +760,7 @@ function updateStatus(obsRegion, lunarEc) {
     else
       {t='월식 없음';c='#666';d='달이 지구 그림자 바깥에 있습니다.';}
   }
-  const prefix = withPin ? '<span class="pin-icon"></span>' : '';
-  document.getElementById('st-type').innerHTML = prefix + t;
+  document.getElementById('st-type').textContent = t;
   document.getElementById('st-type').style.color=c;
   document.getElementById('st-desc').textContent=d;
   document.getElementById('status-card').style.borderLeftColor=c;
@@ -885,7 +883,7 @@ function onDistChange(v){
 
 function onSpeedChange(v){
   animSpeed=parseFloat(v);
-  const t=animSpeed<0.004?'매우 느림':animSpeed<0.0065?'느림':animSpeed<0.012?'보통':animSpeed<0.02?'빠름':'매우 빠름';
+  const t=animSpeed<0.0015?'매우 느림':animSpeed<0.0024?'느림':animSpeed<0.0036?'보통':animSpeed<0.0048?'빠름':'매우 빠름';
   document.getElementById('speed-val').textContent=t;
 }
 

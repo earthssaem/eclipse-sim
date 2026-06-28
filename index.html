@@ -401,7 +401,8 @@ function drawShadowLabels(sh) {
   ctx.textBaseline = 'middle';
 
   // 본그림자: umbra 중심축, caster에 가까운(움브라가 넓은) 쪽
-  const auP = Math.min(caster.r * 2.2, sh.tipDist * 0.45);
+  // 작은 caster(달)에서도 라벨이 본체에 겹치지 않도록 최소 이격거리 확보
+  const auP = Math.min(sh.tipDist * 0.45, Math.max(caster.r * 2.2, caster.r + 38));
   const uX = caster.x + sh.ux * auP;
   const uY = caster.y + sh.uy * auP;
   label('본그림자', uX, uY, 'rgba(10,10,70,0.62)');

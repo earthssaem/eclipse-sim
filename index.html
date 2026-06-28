@@ -17,7 +17,7 @@ footer a:hover{text-decoration:underline}
 h1{font-size:28px;font-weight:700;color:#1f2d4d;letter-spacing:-.6px;line-height:1.2;text-align:center;margin:0}
 .subtitle{font-size:14px;color:#5a6373;line-height:1.5;text-align:center;letter-spacing:-.1px}
 
-.tabs{display:flex;background:#fff;border-radius:10px;padding:3px;gap:3px;border:1px solid rgba(0,0,0,.1);margin-top:6px}
+.tabs{display:flex;background:#fff;border-radius:10px;padding:3px;gap:3px;border:1px solid rgba(0,0,0,.1);margin-top:-4px}
 .tab{padding:5px 26px;font-size:13px;font-weight:500;font-family:inherit;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#666;transition:background .15s,color .15s}
 .tab.active{background:#1a4fa0;color:#fff}
 .card{width:100%;max-width:900px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.09);box-shadow:0 2px 18px rgba(0,0,0,.07);overflow:hidden}
@@ -26,14 +26,12 @@ canvas.dragging{cursor:grabbing}
 .panel{padding:10px 16px 12px;border-top:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:9px}
 
 /* 1. 상태 카드 (결과 영역) — 좌측 컬러 바 + 우측 관측자 시점 셀 */
-.status-card{display:flex;align-items:stretch;gap:16px;background:#f7f5f0;border:1px solid rgba(0,0,0,.08);border-left:5px solid #888;border-radius:10px;padding:10px 14px 10px 16px;transition:border-left-color .2s}
-.status-main{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;justify-content:center}
-.status-title{font-size:15px;font-weight:700;color:#1a4fa0;letter-spacing:-.2px}
-.status-desc{font-size:12.5px;color:#555;line-height:1.6}
-.eye-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;border-left:1px solid rgba(0,0,0,.10);padding-left:16px;justify-content:center}
-.eye-title{font-size:11px;font-weight:600;color:#555}
-#eyeview{width:96px;height:96px;border-radius:8px;display:block}
-.eye-caption{font-size:10px;color:#999;letter-spacing:-.1px}
+.status-card{display:flex;align-items:stretch;gap:12px;background:#f7f5f0;border:1px solid rgba(0,0,0,.08);border-left:5px solid #888;border-radius:10px;padding:6px 12px 6px 14px;transition:border-left-color .2s}
+.status-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;justify-content:center}
+.status-title{font-size:15px;font-weight:700;color:#1a4fa0;letter-spacing:-.2px;line-height:1.25}
+.status-desc{font-size:12.5px;color:#555;line-height:1.55}
+.eye-wrap{display:flex;align-items:center;justify-content:center;flex-shrink:0;border-left:1px solid rgba(0,0,0,.10);padding-left:12px}
+#eyeview{width:78px;height:78px;border-radius:8px;display:block}
 
 /* 2. 조작 영역 */
 .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px}
@@ -70,10 +68,8 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
 
   /* 상태 카드: 세로 스택, 좌측 컬러 바는 상단 띠로 변환 */
   .status-card{flex-direction:column;align-items:stretch;gap:10px;padding:11px 13px;border-left:none;border-top:5px solid #888}
-  .eye-wrap{border-left:none;border-top:1px solid rgba(0,0,0,.10);padding-left:0;padding-top:10px;flex-direction:row;justify-content:flex-start;align-items:center;gap:10px}
-  .eye-wrap .eye-title{order:2;font-size:11.5px}
-  .eye-wrap #eyeview{order:1;width:80px;height:80px}
-  .eye-wrap .eye-caption{order:3;margin-left:auto;font-size:10.5px}
+  .eye-wrap{border-left:none;border-top:1px solid rgba(0,0,0,.10);padding-left:0;padding-top:8px;justify-content:flex-start}
+  .eye-wrap #eyeview{width:72px;height:72px}
 
   /* 컨트롤: 슬라이더가 자동으로 늘어나며 두 줄 이상으로 자연스럽게 흐름 */
   .controls-bottom{padding:10px 12px;gap:10px}
@@ -100,7 +96,6 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
   .tab{padding:5px 14px;font-size:12px}
   .slider-row{flex:1 1 100%}
   .eye-wrap{flex-wrap:wrap}
-  .eye-wrap .eye-caption{margin-left:0;width:100%}
 }
 
 /* 관측 위치 마커 (추파춥스 막대사탕: 빨간 머리 + 흰색 막대) */
@@ -149,9 +144,7 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
         <div class="status-desc"  id="st-desc">달을 드래그하거나 ▶ 버튼으로 공전시키세요.</div>
       </div>
       <div class="eye-wrap">
-        <div class="eye-title">관측자 시점</div>
         <canvas id="eyeview" width="96" height="96"></canvas>
-        <div class="eye-caption" id="eye-caption"><span class="pin-icon"></span>위치에서 본 태양</div>
       </div>
     </div>
   </div>
@@ -284,8 +277,11 @@ function drawShadowCones(light, caster) {
   ctx.rect(caster.x - caster.r, 0, W - caster.x + caster.r, H);
   ctx.clip();
 
+  // antumbra 길이 계산용 (축이 x=W에 닿는 거리)
+  const L  = sh.ux !== 0 ? (W - caster.x) / sh.ux : 2000;
+
   // 반그림자(발산): cT → penTopFar → penBotFar → cB
-  ctx.fillStyle='rgba(140,140,200,0.16)';
+  ctx.fillStyle = 'rgba(140,140,200,0.16)';
   ctx.beginPath();
   ctx.moveTo(sh.cT.x, sh.cT.y);
   ctx.lineTo(sh.penTopFar.x, sh.penTopFar.y);
@@ -293,7 +289,7 @@ function drawShadowCones(light, caster) {
   ctx.lineTo(sh.cB.x, sh.cB.y);
   ctx.closePath(); ctx.fill();
 
-  // 본그림자(수렴): 단순 삼각형 cT → tip → cB
+  // 본그림자(수렴): 단순 삼각형 cT → tip → cB (꼭짓점에서 끝나는 게 맞음, 페이드 X)
   ctx.fillStyle='rgba(30,30,90,0.34)';
   ctx.beginPath();
   ctx.moveTo(sh.cT.x,  sh.cT.y);
@@ -303,15 +299,16 @@ function drawShadowCones(light, caster) {
 
   ctx.restore(); // clip 해제
 
-  // antumbra (일식 전용): tip 너머 발산
+  // antumbra (일식 전용): tip 너머 발산 — 캔버스 끝까지 늘리고 가장자리에서 페이드
   if (mode==='solar') {
-    const ANT_LEN = 380;
+    const ANT_LEN = Math.max(60, (L - sh.tipDist) * 1.3);  // 캔버스 끝을 넘겨 화면 밖으로
     const halfAtFar = caster.r * ANT_LEN / sh.tipDist;
     const ax = sh.tip.x + sh.ux*ANT_LEN;
     const ay = sh.tip.y + sh.uy*ANT_LEN;
     const a1 = { x: ax + sh.nx*halfAtFar, y: ay + sh.ny*halfAtFar };
     const a2 = { x: ax - sh.nx*halfAtFar, y: ay - sh.ny*halfAtFar };
-    ctx.fillStyle='rgba(100,70,160,0.12)';
+    // 반그림자 < antumbra < 본그림자 가 되도록 alpha 0.22로 진하게
+    ctx.fillStyle = 'rgba(75,60,140,0.22)';
     ctx.beginPath();
     ctx.moveTo(sh.tip.x, sh.tip.y);
     ctx.lineTo(a1.x, a1.y);
@@ -387,21 +384,37 @@ function drawBodyShadow(body, light, caster) {
 
 function drawShadowLabels(sh) {
   const caster = mode==='solar' ? getMoon() : EARTH;
-  const along  = Math.min(80, sh.tipDist*0.55);
-  const cx = caster.x + sh.ux*along;
-  const cy = caster.y + sh.uy*along;
+
+  // 라벨에 옅은 외곽선(halo)을 둘러, 경계선·채움과 겹쳐도 읽히게
+  function label(text, x, y, fill) {
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(247,245,240,0.55)';
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = fill;
+    ctx.fillText(text, x, y);
+  }
 
   ctx.save();
-  ctx.font='500 11px "Noto Sans KR",sans-serif';
-  ctx.textAlign='center';
+  ctx.font = '500 11px "Noto Sans KR",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  ctx.fillStyle='rgba(10,10,70,.78)';
-  ctx.fillText('본그림자', cx, cy-2);
+  // 본그림자: umbra 중심축, caster에 가까운(움브라가 넓은) 쪽
+  const auP = Math.min(caster.r * 2.2, sh.tipDist * 0.45);
+  const uX = caster.x + sh.ux * auP;
+  const uY = caster.y + sh.uy * auP;
+  label('본그림자', uX, uY, 'rgba(10,10,70,0.62)');
 
-  const penOff = caster.r + along*(SUN.r+caster.r)/sh.D + 12;
-  ctx.fillStyle='rgba(50,50,140,.70)';
-  ctx.fillText('반그림자', cx + sh.nx*penOff, cy + sh.ny*penOff);
-  ctx.fillText('반그림자', cx - sh.nx*penOff, cy - sh.ny*penOff);
+  // 반그림자: 더 바깥쪽 along에서 penumbra 띠의 한가운데(양옆)
+  const apP = Math.min(caster.r * 4.5, sh.tipDist * 0.9);
+  const pX = caster.x + sh.ux * apP;
+  const pY = caster.y + sh.uy * apP;
+  const umbHalf = caster.r * Math.max(0, 1 - apP / sh.tipDist);
+  const penHalf = caster.r + apP * (SUN.r + caster.r) / sh.D;
+  const penOff = (umbHalf + penHalf) / 2;
+  label('반그림자', pX + sh.nx * penOff, pY + sh.ny * penOff, 'rgba(40,40,120,0.58)');
+  label('반그림자', pX - sh.nx * penOff, pY - sh.ny * penOff, 'rgba(40,40,120,0.58)');
 
   ctx.restore();
 }
@@ -892,9 +905,6 @@ function setMode(m){
   document.getElementById('tab-solar').classList.toggle('active',m==='solar');
   document.getElementById('tab-lunar').classList.toggle('active',m==='lunar');
   document.getElementById('leg-obs').style.display=m==='solar'?'flex':'none';
-  document.getElementById('eye-caption').innerHTML = m==='solar'
-    ? '<span class="pin-icon"></span>위치에서 본 태양'
-    : '지구에서 본 달';
   document.getElementById('legend-hint').textContent = m==='solar'
     ? '※ 달과 관측 위치를 드래그하여 이동시킬 수 있습니다.'
     : '※ 달을 드래그하여 이동시킬 수 있습니다.';

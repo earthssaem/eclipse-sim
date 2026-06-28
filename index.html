@@ -122,8 +122,6 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
     <div class="legend-hint" id="legend-hint">※ 달과 관측 위치를 드래그하여 이동시킬 수 있습니다.</div>
   </div>
   <div class="controls controls-bottom">
-    <button class="ctrl-btn" id="btn-play" onclick="toggleAnim()">▶ 공전 시작</button>
-    <button class="ctrl-btn" onclick="resetMoon()">↺ 초기 위치</button>
     <div class="slider-row">
       <span class="slider-label">달까지 거리</span>
       <input type="range" id="dist-slider" min="0.45" max="1.7" step="0.01" value="1.0"
@@ -136,6 +134,8 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
              oninput="onSpeedChange(this.value)">
       <span class="slider-val" id="speed-val">보통</span>
     </span>
+    <button class="ctrl-btn" id="btn-play" onclick="toggleAnim()">▶ 공전 시작</button>
+    <button class="ctrl-btn" onclick="resetMoon()">↺ 초기 위치</button>
   </div>
   <div class="panel">
     <div class="status-card" id="status-card">

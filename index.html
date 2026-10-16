@@ -18,6 +18,11 @@ footer .hub:hover{color:#333;text-decoration-color:currentColor}
 .header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:2px}
 h1{font-size:28px;font-weight:700;color:#1f2d4d;letter-spacing:-.6px;line-height:1.2;text-align:center;margin:0}
 .subtitle{font-size:14px;color:#5a6373;line-height:1.5;text-align:center;letter-spacing:-.1px}
+/* 제목 부분(제목·부제)을 누르면 처음 화면으로 — 겉모습·배치는 그대로 (margin-top 2px 유지) */
+a.header{color:inherit;text-decoration:none;border-radius:16px;margin:-2px -8px -4px;padding:4px 8px;-webkit-tap-highlight-color:transparent}
+a.header h1{transition:color .15s}
+@media (hover:hover){ a.header:hover h1{color:#1a4fa0} }   /* 터치 화면에서는 누른 뒤 색이 남지 않게 */
+a.header:focus-visible{outline:3px solid #1a4fa0;outline-offset:2px}
 
 .tabs{display:flex;background:#fff;border-radius:10px;padding:3px;gap:3px;border:1px solid rgba(0,0,0,.1);margin-top:-4px}
 .tab{padding:5px 26px;font-size:13px;font-weight:500;font-family:inherit;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#666;transition:background .15s,color .15s}
@@ -105,10 +110,10 @@ input[type=range]{accent-color:#1a4fa0;cursor:pointer;width:120px}
 </style>
 </head>
 <body>
-<div class="header">
+<a class="header" id="homeLink" href="#" title="처음 화면으로" aria-label="일식 · 월식 탐구 시뮬레이터 — 처음 화면으로">
   <h1>일식 · 월식 탐구 시뮬레이터</h1>
   <div class="subtitle">태양·지구·달의 위치 관계를 조작하며 식 현상을 탐구해 보세요.</div>
-</div>
+</a>
 <div class="tabs">
   <button class="tab active" id="tab-solar" onclick="setMode('solar')">🌑 일식</button>
   <button class="tab"        id="tab-lunar" onclick="setMode('lunar')">🌕 월식</button>
@@ -922,6 +927,14 @@ function resetMoon(){
   if(ds){ ds.value='1.0'; document.getElementById('dist-val').textContent='보통 1.00×'; }
   draw();
 }
+
+// 제목을 누르면 처음 화면으로: 일식 모드 · 공전 정지 · 달과 관측 위치는 처음 자리 (공전 속도 설정은 그대로 둠)
+function goHome(){
+  if(animating) toggleAnim();   // 처음 열었을 때처럼 공전 정지
+  setMode('solar');             // 일식 탭 + 달·관측 위치·거리를 처음 상태로 (탭 전환과 같은 처리)
+  scrollTo(0,0); document.body.scrollTop=0;   // 좁은 화면에서 스크롤한 경우 맨 위로
+}
+document.getElementById('homeLink').addEventListener('click',e=>{e.preventDefault();goHome();});
 
 setMode('solar');
 eyeShimmer();

@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>일식 · 월식 탐구 시뮬레이터</title>
+<!-- 새로고침 때 일식 탭이 잠깐 보였다가 바뀌지 않도록, 그리기 전에 주소의 탭(#tab2 = 월식)을 html[data-tab] 으로 표시 (탭 버튼·범례·안내 문구는 아래 css, 해제는 setMode)
+     <style> 보다 앞에 두어야 글꼴 @import 를 기다리지 않고 바로 실행됨 -->
+<script>(function () { if (location.hash === '#tab2') document.documentElement.setAttribute('data-tab', '2'); })();</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -27,6 +30,14 @@ a.header:focus-visible{outline:3px solid #1a4fa0;outline-offset:2px}
 .tabs{display:flex;background:#fff;border-radius:10px;padding:3px;gap:3px;border:1px solid rgba(0,0,0,.1);margin-top:-4px}
 .tab{padding:5px 26px;font-size:13px;font-weight:500;font-family:inherit;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#666;transition:background .15s,color .15s}
 .tab.active{background:#1a4fa0;color:#fff}
+/* 새로고침 때 주소의 탭(#tab2 = 월식)을 처음부터 보여 줌: 월식 탭 버튼 선택 모양, 관측 위치 범례 숨김, 월식용 안내 문구.
+   html[data-tab] 은 head 스크립트가 붙이고 setMode 가 뗌 (그 뒤로는 .active 와 setMode 가 넣는 문구로만 보임).
+   본문 스크립트는 글꼴 @import 를 기다리느라 그 전에 화면이 한 번 그려질 수 있어서, 스크립트가 아니라 css 로 맞춤 */
+html[data-tab="2"] #tab-solar{background:transparent;color:#666}
+html[data-tab="2"] #tab-lunar{background:#1a4fa0;color:#fff}
+html[data-tab="2"] #leg-obs{display:none}
+html[data-tab="2"] #legend-hint{font-size:0}
+html[data-tab="2"] #legend-hint::after{content:'※ 달을 드래그하여 이동시킬 수 있습니다.';font-size:11px}  /* setMode 의 월식 문구와 같게 */
 .card{width:100%;max-width:900px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.09);box-shadow:0 2px 18px rgba(0,0,0,.07);overflow:hidden}
 canvas{display:block;width:100%;aspect-ratio:900/380;background:#f2ede3;cursor:grab}
 canvas.dragging{cursor:grabbing}
@@ -908,8 +919,14 @@ function onSpeedChange(v){
   document.getElementById('speed-val').textContent=t;
 }
 
-function setMode(m){
+// fromInit: 처음 열 때 부르는 경우 — 주소는 읽기만 하고 고쳐 쓰지 않음
+function setMode(m, fromInit){
   mode=m;
+  document.documentElement.removeAttribute('data-tab'); // 처음 표시(html[data-tab])를 거두고 원래 방식으로만 보여 줌
+  // 새로고침해도 보던 탭이 열리게 주소 끝에 탭을 적어 둠 (월식 #tab2). 일식은 주소를 깨끗하게 둠. 방문 기록은 늘리지 않음
+  if(!fromInit){
+    try { history.replaceState(null, '', m==='solar' ? location.pathname + location.search : '#tab2'); } catch (e) { /* 주소를 못 바꾸는 환경이면 그냥 둠 */ }
+  }
   document.getElementById('tab-solar').classList.toggle('active',m==='solar');
   document.getElementById('tab-lunar').classList.toggle('active',m==='lunar');
   document.getElementById('leg-obs').style.display=m==='solar'?'flex':'none';
@@ -936,7 +953,10 @@ function goHome(){
 }
 document.getElementById('homeLink').addEventListener('click',e=>{e.preventDefault();goHome();});
 
-setMode('solar');
+// 처음 열 때 주소가 #tab2 이면 월식, 그 밖(없음·잘못된 주소)은 일식으로 — 탭 버튼과 같은 setMode 로 연다.
+// 스크립트가 이 한 덩어리뿐이고 본문 맨 끝에 있으므로, 여기가 모든 스크립트를 읽은 뒤(DOMContentLoaded 직전)이다.
+// DOMContentLoaded 에서 바꾸면 일식을 한 번 그린 뒤 월식으로 다시 그리게 되므로 처음부터 그 탭으로 연다.
+setMode(location.hash==='#tab2' ? 'lunar' : 'solar', true);
 eyeShimmer();
 </script>
 </body>
